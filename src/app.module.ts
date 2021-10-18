@@ -11,12 +11,12 @@ import { BouquetDB } from './bouquet/entities/bouquet_db.entity';
 import { CustomerDB } from './customer/entities/customer_db.entity';
 import { SellerDB } from './seller/entities/seller_db.entity';
 import { PurchaseDB } from './purchase/entities/purchase_db.entity';
-import {ConfigModule} from '@nestjs/config'
+import {ConfigModule, ConfigService} from '@nestjs/config'
 
 @Module({
   imports: [
       ConfigModule.forRoot({
-        envFilePath: '.env.prod'
+        envFilePath: ['.env.prod']
       }),
     SellerModule,
     BouquetModule,
@@ -28,12 +28,18 @@ import {ConfigModule} from '@nestjs/config'
       debug: false,
       playground: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: 'mongodb://localhost/app',
-      synchronize: true,
-      useUnifiedTopology: true,
-      entities: [BouquetDB, CustomerDB, SellerDB, PurchaseDB],
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          type: 'mongodb',
+          url: configService.get('DB_URL'),
+          synchronize: true,
+          useUnifiedTopology: true,
+          entities: [BouquetDB, CustomerDB, SellerDB, PurchaseDB]
+        }
+      },
     }),
   ],
   controllers: [AppController],

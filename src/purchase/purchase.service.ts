@@ -7,9 +7,10 @@ import { ObjectID } from 'mongodb';
 
 @Injectable()
 export class PurchaseService {
-  private manager = getMongoManager();
+  private manager;
 
   async create(purchaseBouquetInput: PurchaseBouquetInput) {
+    if(!this.manager) this.manager =  getMongoManager();
     const { bouquet, customer } = purchaseBouquetInput;
     const cost = await this.manager.findOne(BouquetDB, {
       where: { _id: ObjectID(bouquet) },
@@ -19,9 +20,11 @@ export class PurchaseService {
   }
 
   async findOne(id: string) {
+    if(!this.manager) this.manager =  getMongoManager();
     return await this.manager.find(PurchaseDB, { where: { customer: id } });
   }
   async findById(id: string) {
+    if(!this.manager) this.manager =  getMongoManager();
     return this.manager.findOne(PurchaseDB, { where: { _id: ObjectID(id) } });
   }
 }

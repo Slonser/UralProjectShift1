@@ -8,9 +8,10 @@ import {SellerDB} from '../seller/entities/seller_db.entity';
 
 @Injectable()
 export class BouquetService {
-  private manager = getMongoManager();
+  private manager;
 
   async create(createBouquetInput: CreateBouquetInput) {
+    if(!this.manager) this.manager =  getMongoManager();
     const { name, price, photo, sellerID } = createBouquetInput;
     const bouquet = new BouquetDB(name, price, photo, sellerID);
     const seller = await this.manager.findOne(SellerDB, {
@@ -27,6 +28,7 @@ export class BouquetService {
   }
 
   async findAll() {
+    if(!this.manager) this.manager =  getMongoManager();
     return await this.manager.find(BouquetDB);
   }
   async findAllBySeller(id: string) {
@@ -35,6 +37,7 @@ export class BouquetService {
     });
   }
   async findOne(id: string) {
+    if(!this.manager) this.manager =  getMongoManager();
     const result = await this.manager.findOne(BouquetDB, {
       where: { _id: ObjectID(id) },
     });
@@ -43,6 +46,7 @@ export class BouquetService {
   }
 
   async update(id: string, updateBouquetInput: UpdateBouquetInput) {
+    if(!this.manager) this.manager =  getMongoManager();
     const result = await this.findOne(id);
     if (!result) throw Error('Not found');
     await this.manager.updateOne(
@@ -54,6 +58,7 @@ export class BouquetService {
   }
 
   async remove(id: string) {
+    if(!this.manager) this.manager =  getMongoManager();
     return await this.manager.deleteOne(BouquetDB, { _id: ObjectID(id) });
   }
 }
