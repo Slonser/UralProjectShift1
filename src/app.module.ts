@@ -33,7 +33,7 @@ import {ConfigModule, ConfigService} from '@nestjs/config'
       useFactory: async (configService: ConfigService) => {
         return {
           type: 'mongodb',
-          url: configService.get('DB_URL'),
+          url: process.env.DB,
           synchronize: true,
           useUnifiedTopology: true,
           entities: [BouquetDB, CustomerDB, SellerDB, PurchaseDB]
